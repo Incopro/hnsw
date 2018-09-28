@@ -75,16 +75,7 @@ public:
     Index(const std::string &space_name, const int dim) :
             space_name(space_name), dim(dim) {
         normalize=false;
-        if(space_name=="l2") {
-            l2space = new hnswlib::L2Space(dim);
-        }
-        else if(space_name=="ip") {
-            l2space = new hnswlib::InnerProductSpace(dim);
-        }
-        else if(space_name=="cosine") {
-            l2space = new hnswlib::InnerProductSpace(dim);
-            normalize=true;
-        }
+        l2space = new hnswlib::HammingSpace(dim);
         appr_alg = NULL;
         ep_added = true;
         index_inited = false;
@@ -328,7 +319,7 @@ public:
     int num_threads_default;
     hnswlib::labeltype cur_l;
     hnswlib::HierarchicalNSW<dist_t> *appr_alg;
-    hnswlib::SpaceInterface<float> *l2space;
+    hnswlib::SpaceInterface<unsigned long long> *l2space;
 
     ~Index() {
         delete l2space;
@@ -340,18 +331,18 @@ public:
 PYBIND11_PLUGIN(hnswlib) {
         py::module m("hnswlib");
 
-        py::class_<Index<float>>(m, "Index")
+        py::class_<Index<unsigned long long>>(m, "Index")
         .def(py::init<const std::string &, const int>(), py::arg("space"), py::arg("dim"))
-        .def("init_index", &Index<float>::init_new_index, py::arg("max_elements"), py::arg("M")=16,
+        .def("init_index", &Index<unsigned long long>::init_new_index, py::arg("max_elements"), py::arg("M")=16,
         py::arg("ef_construction")=200, py::arg("random_seed")=100)
-        .def("knn_query", &Index<float>::knnQuery_return_numpy, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1)
-        .def("add_items", &Index<float>::addItems, py::arg("data"), py::arg("ids") = py::none(), py::arg("num_threads")=-1)
-        .def("set_ef", &Index<float>::set_ef, py::arg("ef"))
-        .def("set_num_threads", &Index<float>::set_num_threads, py::arg("num_threads"))
-        .def("save_index", &Index<float>::saveIndex, py::arg("path_to_index"))
-        .def("load_index", &Index<float>::loadIndex, py::arg("path_to_index"), py::arg("max_elements")=0)
+        .def("knn_query", &Index<unsigned long long>::knnQuery_return_numpy, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1)
+        .def("add_items", &Index<unsigned long long>::addItems, py::arg("data"), py::arg("ids") = py::none(), py::arg("num_threads")=-1)
+        .def("set_ef", &Index<unsigned long long>::set_ef, py::arg("ef"))
+        .def("set_num_threads", &Index<unsigned long long>::set_num_threads, py::arg("num_threads"))
+        .def("save_index", &Index<unsigned long long>::saveIndex, py::arg("path_to_index"))
+        .def("load_index", &Index<unsigned long long>::loadIndex, py::arg("path_to_index"), py::arg("max_elements")=0)
         .def("__repr__",
-        [](const Index<float> &a) {
+        [](const Index<unsigned long long> &a) {
             return "<HNSW-lib index>";
         }
         );

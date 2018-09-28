@@ -1,3 +1,5 @@
+Forked version by Incopro to support only binary uint64 vectors with hamming distance.
+
 # Hnswlib - fast approximate nearest neighbor search
 Header-only C++ HNSW implementation with python bindings. Paper code for the HNSW 200M SIFT experiment
 
